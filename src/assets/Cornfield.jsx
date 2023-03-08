@@ -9,8 +9,9 @@ import { useGLTF } from '@react-three/drei'
 export function CornField(props) {
   const { nodes, materials } = useGLTF('/Cornfield.glb')
   return (
-    <group {...props}>
-      <mesh receiveShadow castShadow geometry={nodes.Cornfield.geometry} material={materials['Material.001']} />
+    <group {...props} dispose={null}>
+      <mesh castShadow receiveShadow geometry={nodes.Plane006.geometry} material={materials['Material.001']} />
+      <mesh castShadow receiveShadow geometry={nodes.Plane006_1.geometry} material={materials['Material.003']} />
     </group>
   )
 }

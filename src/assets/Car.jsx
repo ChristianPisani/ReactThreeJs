@@ -9,12 +9,12 @@ import { useGLTF } from '@react-three/drei'
 export function Car(props) {
   const { nodes, materials } = useGLTF('/Car.glb')
   return (
-    <group {...props} dispose={null}>
-      <mesh geometry={nodes.Cylinder005_1.geometry} material={materials.Material} />
-      <mesh geometry={nodes.Cylinder005_2.geometry} material={materials['Material.001']} />
-      <mesh geometry={nodes.Cylinder005_3.geometry} material={materials.Tire} />
-      <mesh geometry={nodes.Cylinder005_4.geometry} material={materials.Car} />
-      <mesh geometry={nodes.Cylinder005_5.geometry} material={materials.Windows} />
+    <group  {...props} dispose={null}>
+      <mesh receiveShadow castShadow geometry={nodes.Cylinder005_1.geometry} material={materials.Material} />
+      <mesh receiveShadow castShadow geometry={nodes.Cylinder005_2.geometry} material={materials['Material.001']} />
+      <mesh receiveShadow castShadow geometry={nodes.Cylinder005_3.geometry} material={materials.Tire} />
+      <mesh receiveShadow castShadow geometry={nodes.Cylinder005_4.geometry} material={materials.Car} />
+      <mesh receiveShadow castShadow geometry={nodes.Cylinder005_5.geometry} material={materials.Windows} />
     </group>
   )
 }

@@ -11,7 +11,8 @@ import {
 } from "@react-three/fiber";
 import {
     Box,
-    OrbitControls
+    OrbitControls,
+    Plane
 } from "@react-three/drei";
 import DirectionalLightNode
     from "three/addons/nodes/lighting/DirectionalLightNode.js";
@@ -122,7 +123,7 @@ const Player = () => {
         }
         if (rotatingLeft) {
             setRotation(rotation - rotationSpeed);
-        } 
+        }
         if (rotatingRight) {
             setRotation(rotation + rotationSpeed);
         }
@@ -131,18 +132,19 @@ const Player = () => {
 
     return (
         <Car
-            scale={[2,2,2]}
+            scale={[2, 2, 2]}
             position={position}
             rotation={[0, -rotation, 0]}></Car>
     )
 }
+
+const shadowCameraDist = 200;
 
 export const ThreeApp = () => {
     return (
         <Canvas
             className={"threeCanvas"}
             shadows={"soft"}
-            shadow-map-size={[2048, 2048]}
 
             camera={{
                 position: [-1, 5, 5],
@@ -157,19 +159,34 @@ export const ThreeApp = () => {
                 position={[-100, 250, 400]}
                 color={new Color(1.5, 1.2, 1.2)}
                 shadow-camera-top={100}
-                shadow-camera-bottom={-100}
-                shadow-camera-left={100}
-                shadow-camera-right={-100}
+                shadow-camera-bottom={-shadowCameraDist}
+                shadow-camera-left={shadowCameraDist}
+                shadow-camera-right={-shadowCameraDist}
                 shadow-camera-far={1000}
-                shadow-bias={0.0001}
+                shadow-mapSize-height={4096}
+                shadow-mapSize-width={4096}
             />
 
             <Player></Player>
 
-            <JungleTree scale={[0.5,0.5,0.5]}></JungleTree>
             <CornField></CornField>
+            <CornField position={[97.6,0,0]}></CornField>
+            <CornField position={[-97.6,0,0]}></CornField>
+            <CornField position={[-97.6,0,-97.6]}></CornField>
+            <CornField position={[-97.6,0,97.6]}></CornField>
+            <CornField position={[0,0,97.6]}></CornField>
+            <CornField position={[97.6,0,97.6]}></CornField>
+            <CornField position={[97.6,0,-97.6]}></CornField>
+            <CornField position={[0,0,-97.6]}></CornField>
             <CornPlant
                 variation={1}></CornPlant>
+            <Plane
+                receiveShadow
+                castShadow
+                position={[0, -0.1, 0]}
+                scale={[1000, 1000, 1000]}
+                material={new THREE.MeshBasicMaterial({color: "#624f14"})}
+                rotation={[-Math.PI / 2, 0, 0]}></Plane>
             <OrbitControls></OrbitControls>
         </Canvas>
     );
