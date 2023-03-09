@@ -4,11 +4,16 @@ Command: npx gltfjsx@6.1.4 .\\CornPlant.glb
 */
 
 import React, {
+    useEffect,
     useRef
 } from 'react'
 import {
     useGLTF
 } from '@react-three/drei'
+import {
+    InstancedMesh,
+    Object3D
+} from "three";
 
 export function CornPlant(props) {
     const {
@@ -17,48 +22,58 @@ export function CornPlant(props) {
     } = useGLTF('/CornPlant.glb')
 
     const cornPlantVariation = props.variation;
+    const plants = props.plants;
+
+    const leavesRef = useRef();
+    const stalkRef = useRef();
+    const tempObject = new Object3D();
+
+    useEffect(() => {
+        if (leavesRef?.current == null || stalkRef?.current == null) return;
+
+        let i = 0;
+        plants?.forEach(plant => {
+            const id = i++;
+            if (plant.destroyed) {
+                tempObject.scale.set(0, 0, 0);
+            } else {
+                const {
+                    position,
+                    rotation,
+                    scale
+                } = plant;
+
+                tempObject.position.set(position.x, position.y, position.z);
+                tempObject.scale.set(scale.x, scale.y, scale.z);
+                tempObject.rotation.set(rotation.x, rotation.y, rotation.z);
+            }
+            tempObject.updateMatrix();
+            leavesRef.current.setMatrixAt(id, tempObject.matrix);
+            stalkRef.current.setMatrixAt(id, tempObject.matrix);
+        });
+
+        leavesRef.current.instanceMatrix.needsUpdate = true;
+        stalkRef.current.instanceMatrix.needsUpdate = true;
+    }, [plants]);
 
     return (
-        <group {...props}
-               dispose={null}>
-            {cornPlantVariation === 1 &&
-                <group>
-                    <mesh
-                        geometry={nodes.Circle001.geometry}
-                        material={materials['Material.001']}/>
-                    <mesh
-                        geometry={nodes.Circle001_1.geometry}
-                        material={materials['Material.003']}/>
-                </group>}
-            {cornPlantVariation === 2 &&
-                <group>
-                    <mesh
-                        geometry={nodes.Circle002.geometry}
-                        material={materials['Material.001']}/>
-                    <mesh
-                        geometry={nodes.Circle002_1.geometry}
-                        material={materials['Material.003']}/>
-                </group>}
-            {cornPlantVariation === 3 &&
-                <group>
-                    <mesh
-                        geometry={nodes.Circle003.geometry}
-                        material={materials['Material.001']}/>
-                    <mesh
-                        geometry={nodes.Circle003_1.geometry}
-                        material={materials['Material.003']}/>
-                </group>}
-            {cornPlantVariation === 4 &&
-                <group>
-                    <mesh
-                        geometry={nodes.Circle004.geometry}
-                        material={materials['Material.001']}/>
-                    <mesh
-                        geometry={nodes.Circle004_1.geometry}
-                        material={materials['Material.003']}/>
-                </group>}
-        </group>
-    )
+        <group {...props} >
+            <instancedMesh
+                castShadow receiveShadow
+                ref={leavesRef}
+                args={[null, null, plants?.length ?? 1]}
+                geometry={nodes.Circle001.geometry}
+                material={materials['Material.001']}/>
+            <instancedMesh
+                castShadow receiveShadow
+                ref={stalkRef}
+                args={[null, null, plants?.length ?? 1]}
+                geometry={nodes.Circle001_1.geometry}
+                material={materials['Material.003']}/>
+        </group>)
+        ;
+
+
 }
 
 useGLTF.preload('/CornPlant.glb')

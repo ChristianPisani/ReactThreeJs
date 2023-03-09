@@ -11,7 +11,11 @@ import {
 } from "@react-three/fiber";
 import {
     Box,
+    CameraControls,
+    FlyControls,
     OrbitControls,
+    OrthographicCamera,
+    PerspectiveCamera,
     Plane
 } from "@react-three/drei";
 import DirectionalLightNode
@@ -42,16 +46,26 @@ import {
 } from "./Car.jsx";
 
 
-const Player = () => {
-    const [position, setPosition] = useState([0, 0, 0]);
+const cornDistance = 6;
+
+const Player = (props) => {
+    const [position, setPosition] = useState([0, 0, 0])
+    const [direction, setDirection] = useState([0, 0, 0])
     const [rotation, setRotation] = useState(0);
     const [movingForward, setMovingForward] = useState(false);
     const [movingBackwards, setMovingBackwards] = useState(false);
     const [rotatingRight, setRotatingRight] = useState(false);
     const [rotatingLeft, setRotatingLeft] = useState(false);
+    const [boosting, setBoosting] = useState(false);
 
-    const movementSpeed = 0.75;
+    const movementSpeed = 1;
+    const boost = 1.5;
     const rotationSpeed = 0.05;
+
+    const {
+        cornField,
+        setCornField
+    } = props;
 
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -67,6 +81,9 @@ const Player = () => {
                     break;
                 case 'd':
                     setRotatingRight(true);
+                    break;
+                case 'shift':
+                    setBoosting(true)
                     break;
             }
         };
@@ -84,6 +101,9 @@ const Player = () => {
                     break;
                 case 'd':
                     setRotatingRight(false);
+                    break;
+                case 'shift':
+                    setBoosting(false)
                     break;
             }
         };
@@ -107,77 +127,143 @@ const Player = () => {
 
     useFrame(() => {
         const forward = rotate2D(0, 1, rotation);
+        setDirection([forward[0], 0, forward[1]]);
         const movementVector = new Vector3(forward[0], 0, forward[1]);
 
-        if (movingForward) {
-            movementVector.multiplyScalar(-movementSpeed);
-            const newPos = new Vector3(position[0] + movementVector.x, position[1] + movementVector.y, position[2] + movementVector.z);
+        let moveDir = -1;
 
-            setPosition([newPos.x, newPos.y, newPos.z]);
-        }
         if (movingBackwards) {
-            movementVector.multiplyScalar(movementSpeed);
+            moveDir = 1;
+        }
+
+        if (boosting) {
+            movementVector.multiplyScalar(boost);
+        }
+
+        if (movingForward || movingBackwards) {
+            movementVector.multiplyScalar(movementSpeed * moveDir);
             const newPos = new Vector3(position[0] + movementVector.x, position[1] + movementVector.y, position[2] + movementVector.z);
 
             setPosition([newPos.x, newPos.y, newPos.z]);
         }
+
         if (rotatingLeft) {
             setRotation(rotation - rotationSpeed);
         }
         if (rotatingRight) {
             setRotation(rotation + rotationSpeed);
         }
+
+        const x = position[0];
+        const y = position[1];
+        const z = position[2];
+
+        const vectorPos = new Vector3(x, y, z);
+        const cornFieldCopy = [...cornField];
+        cornFieldCopy.forEach(corn => {
+            const distance = vectorPos.distanceTo(new Vector3(corn.position.x, corn.position.y, corn.position.z));
+            if (distance <= 10 && !corn.destroyed) {
+                corn.destroyed = true;
+            }
+        })
+        setCornField(cornFieldCopy);
     });
 
 
     return (
-        <Car
-            scale={[2, 2, 2]}
-            position={position}
-            rotation={[0, -rotation, 0]}></Car>
+        <>
+            <Car
+                scale={[2, 2, 2]}
+                position={position}
+                rotation={[0, -rotation, 0]}></Car>
+            <PlayerCamera position={position} direction={direction}></PlayerCamera>
+        </>
     )
 }
 
-const shadowCameraDist = 200;
+const shadowCameraDist = 300;
+
+const PlayerCamera = (props) => {
+    const cameraRef = useRef();
+
+    const {
+        position,
+        direction
+    } = props;
+
+    useFrame(() => {
+        if (!position || !direction) return;
+
+        cameraRef?.current?.lookAt(position[0] - direction[0] * 10, position[1] - direction[1] * 10, position[2] - direction[2] * 10);
+    });
+
+    return (
+        <PerspectiveCamera
+            ref={cameraRef}
+            position={position ? [position[0] + direction[0] * 10, position[1] + direction[1] * 10 + 15, position[2] + direction[2] * 10] : [0, 0, 0]}
+            fov={90}
+            far={1000}
+            makeDefault={true}></PerspectiveCamera>
+    )
+}
 
 export const ThreeApp = () => {
+    const [cornField, setCornField] = useState([]);
+
+    useEffect(() => {
+        const cornField = [];
+
+        for (let x = -50; x < 50; x++) {
+            for (let y = -50; y < 50; y++) {
+                const randomScale = Math.random() * 2 + 1;
+
+                cornField.push({
+                    position: {
+                        x: x * cornDistance,
+                        y: 0,
+                        z: y * cornDistance
+                    },
+                    rotation: {
+                        x: Math.random() * 0.5,
+                        y: Math.random() * 360,
+                        z: Math.random() * 0.5
+                    },
+                    scale: {
+                        x: randomScale,
+                        y: randomScale,
+                        z: randomScale
+                    },
+                    variation: Math.round(Math.random() * 4) + 1
+                });
+            }
+        }
+        setCornField(cornField);
+    }, [])
+
+
     return (
         <Canvas
             className={"threeCanvas"}
             shadows={"soft"}
-
-            camera={{
-                position: [-1, 5, 5],
-                fov: 90,
-                far: 10000
-            }}
         >
             <ambientLight
                 intensity={0.5}/>
             <directionalLight
                 castShadow
-                position={[-100, 250, 400]}
+                position={[-50, 100, -100]}
                 color={new Color(1.5, 1.2, 1.2)}
-                shadow-camera-top={100}
+                shadow-camera-top={shadowCameraDist}
                 shadow-camera-bottom={-shadowCameraDist}
                 shadow-camera-left={shadowCameraDist}
                 shadow-camera-right={-shadowCameraDist}
                 shadow-camera-far={1000}
-                shadow-mapSize-height={4096}
-                shadow-mapSize-width={4096}
+                shadow-mapSize-height={1024}
+                shadow-mapSize-width={1024}
             />
 
-            <Player></Player>
-
-            <CornField></CornField>
-            <CornField position={[97.6,0,0]}></CornField>
-            <CornField position={[-97.6,0,0]}></CornField>
-            <CornField position={[-97.6,0,-97.6]}></CornField>
-            <CornField position={[-97.6,0,97.6]}></CornField>
-            <CornField position={[0,0,97.6]}></CornField>
-            <CornField position={[97.6,0,97.6]}></CornField>
-            <CornField position={[97.6,0,-97.6]}></CornField>
-            <CornField position={[0,0,-97.6]}></CornField>
+            <Player
+                cornField={cornField}
+                setCornField={setCornField}></Player>
             <CornPlant
                 variation={1}></CornPlant>
             <Plane
@@ -185,8 +271,12 @@ export const ThreeApp = () => {
                 castShadow
                 position={[0, -0.1, 0]}
                 scale={[1000, 1000, 1000]}
-                material={new THREE.MeshBasicMaterial({color: "#624f14"})}
+                material={new THREE.MeshLambertMaterial({color: "#624f14"})}
                 rotation={[-Math.PI / 2, 0, 0]}></Plane>
+
+            <CornPlant
+                position={[0, 0, 0]}
+                plants={cornField}/>
             <OrbitControls></OrbitControls>
         </Canvas>
     );
