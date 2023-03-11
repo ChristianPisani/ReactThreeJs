@@ -8,28 +8,47 @@ import React, {
     useRef
 } from 'react'
 import {
+    Box,
     useGLTF
 } from '@react-three/drei'
 import {
-    InstancedMesh,
     Object3D
 } from "three";
 
+
 export function CornPlant(props) {
+    const plant1Gltf = useGLTF('/Corn1.glb')
+    const plant2Gltf = useGLTF('/Corn2.glb')
+    const plant3Gltf = useGLTF('/Corn3.glb')
+    const plant4Gltf = useGLTF('/Corn4.glb')
+
     const {
-        nodes,
-        materials
-    } = useGLTF('/CornPlant.glb')
+        plants,
+        setPlants
+    } = props;
 
-    const cornPlantVariation = props.variation;
-    const plants = props.plants;
+    const leavesType1Ref = useRef();
+    const leavesType2Ref = useRef();
+    const leavesType3Ref = useRef();
+    const leavesType4Ref = useRef();
 
-    const leavesRef = useRef();
-    const stalkRef = useRef();
+    const stalkType1Ref = useRef();
+    const stalkType2Ref = useRef();
+    const stalkType3Ref = useRef();
+    const stalkType4Ref = useRef();
+
     const tempObject = new Object3D();
 
+    const type1Plants = plants?.filter(x => !x.variation || x.variation === 1);
+    const type2Plants = plants?.filter(x => x.variation === 2);
+    const type3Plants = plants?.filter(x => x.variation === 3);
+    const type4Plants = plants?.filter(x => x.variation === 4);
+
     useEffect(() => {
-        if (leavesRef?.current == null || stalkRef?.current == null) return;
+        if (leavesType1Ref?.current == null || stalkType1Ref?.current == null) return;
+        if (leavesType2Ref?.current == null || stalkType2Ref?.current == null) return;
+        if (leavesType3Ref?.current == null || stalkType3Ref?.current == null) return;
+        if (leavesType4Ref?.current == null || stalkType4Ref?.current == null) return;
 
         let i = 0;
         plants?.forEach(plant => {
@@ -48,32 +67,109 @@ export function CornPlant(props) {
                 tempObject.rotation.set(rotation.x, rotation.y, rotation.z);
             }
             tempObject.updateMatrix();
-            leavesRef.current.setMatrixAt(id, tempObject.matrix);
-            stalkRef.current.setMatrixAt(id, tempObject.matrix);
-        });
 
-        leavesRef.current.instanceMatrix.needsUpdate = true;
-        stalkRef.current.instanceMatrix.needsUpdate = true;
+            switch (plant.variation) {
+                case(1):
+                default:
+                    leavesType1Ref.current.setMatrixAt(id, tempObject.matrix);
+                    stalkType1Ref.current.setMatrixAt(id, tempObject.matrix);
+                    leavesType1Ref.current.instanceMatrix.needsUpdate = true;
+                    stalkType1Ref.current.instanceMatrix.needsUpdate = true;
+                    break;
+                case(2):
+                    leavesType2Ref.current.setMatrixAt(id, tempObject.matrix);
+                    stalkType2Ref.current.setMatrixAt(id, tempObject.matrix);
+                    leavesType2Ref.current.instanceMatrix.needsUpdate = true;
+                    stalkType2Ref.current.instanceMatrix.needsUpdate = true;
+                    break;
+                case(3):
+                    leavesType3Ref.current.setMatrixAt(id, tempObject.matrix);
+                    stalkType3Ref.current.setMatrixAt(id, tempObject.matrix);
+                    leavesType3Ref.current.instanceMatrix.needsUpdate = true;
+                    stalkType3Ref.current.instanceMatrix.needsUpdate = true;
+                    break;
+                case(4):
+                    leavesType4Ref.current.setMatrixAt(id, tempObject.matrix);
+                    stalkType4Ref.current.setMatrixAt(id, tempObject.matrix);
+                    leavesType4Ref.current.instanceMatrix.needsUpdate = true;
+                    stalkType4Ref.current.instanceMatrix.needsUpdate = true;
+                    break;
+            }
+        });
     }, [plants]);
 
     return (
-        <group {...props} >
-            <instancedMesh
-                castShadow receiveShadow
-                ref={leavesRef}
-                args={[null, null, plants?.length ?? 1]}
-                geometry={nodes.Circle001.geometry}
-                material={materials['Material.001']}/>
-            <instancedMesh
-                castShadow receiveShadow
-                ref={stalkRef}
-                args={[null, null, plants?.length ?? 1]}
-                geometry={nodes.Circle001_1.geometry}
-                material={materials['Material.003']}/>
-        </group>)
-        ;
-
-
+        <>
+            <group {...props} >
+                <group>
+                    <instancedMesh
+                        castShadow
+                        receiveShadow
+                        ref={leavesType1Ref}
+                        args={[null, null, plants.length ?? 1]}
+                        geometry={plant1Gltf.nodes.Circle001.geometry}
+                        material={plant1Gltf.materials['Material.001']}/>
+                    <instancedMesh
+                        castShadow
+                        receiveShadow
+                        ref={stalkType1Ref}
+                        args={[null, null, plants?.length ?? 1]}
+                        geometry={plant1Gltf.nodes.Circle001_1.geometry}
+                        material={plant1Gltf.materials['Material.003']}/>
+                </group>
+                <group>
+                    <instancedMesh
+                        castShadow
+                        receiveShadow
+                        ref={leavesType2Ref}
+                        args={[null, null, plants?.length ?? 1]}
+                        geometry={plant2Gltf.nodes.Circle002.geometry}
+                        material={plant2Gltf.materials['Material.001']}/>
+                    <instancedMesh
+                        castShadow
+                        receiveShadow
+                        ref={stalkType2Ref}
+                        args={[null, null, plants?.length ?? 1]}
+                        geometry={plant2Gltf.nodes.Circle002_1.geometry}
+                        material={plant2Gltf.materials['Material.003']}/>
+                </group>
+                <group>
+                    <instancedMesh
+                        castShadow
+                        receiveShadow
+                        ref={leavesType3Ref}
+                        args={[null, null, plants?.length ?? 1]}
+                        geometry={plant3Gltf.nodes.Circle003.geometry}
+                        material={plant3Gltf.materials['Material.001']}/>
+                    <instancedMesh
+                        castShadow
+                        receiveShadow
+                        ref={stalkType3Ref}
+                        args={[null, null, plants?.length ?? 1]}
+                        geometry={plant3Gltf.nodes.Circle003_1.geometry}
+                        material={plant3Gltf.materials['Material.003']}/>
+                </group>
+                <group>
+                    <instancedMesh
+                        castShadow
+                        receiveShadow
+                        ref={leavesType4Ref}
+                        args={[null, null, plants?.length ?? 1]}
+                        geometry={plant4Gltf.nodes.Circle004.geometry}
+                        material={plant4Gltf.materials['Material.001']}/>
+                    <instancedMesh
+                        castShadow
+                        receiveShadow
+                        ref={stalkType4Ref}
+                        args={[null, null, plants?.length ?? 1]}
+                        geometry={plant4Gltf.nodes.Circle004_1.geometry}
+                        material={plant4Gltf.materials['Material.003']}/>
+                </group>
+            </group>
+        </>);
 }
 
-useGLTF.preload('/CornPlant.glb')
+useGLTF.preload('/Corn1.glb')
+useGLTF.preload('/Corn2.glb')
+useGLTF.preload('/Corn3.glb')
+useGLTF.preload('/Corn4.glb')
