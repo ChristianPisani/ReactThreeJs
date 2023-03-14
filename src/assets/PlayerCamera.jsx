@@ -18,17 +18,20 @@ export const PlayerCamera = (props) => {
 
     const {
         position,
-        direction
+        direction,
+        active
     } = props;
 
 
     useFrame(() => {
-        if (!position || !direction) return;
+        if (!active || !position || !direction) return;
 
+        const shakeRemoval = 1;
+        const positionAvg = position.map(p => Math.round(p / shakeRemoval) * shakeRemoval);
 
         if (cameraRef.current) {
             const distance = 10;
-            const lerpedPos = cameraRef.current.position.lerp(new Vector3(position[0] + direction[0] * distance, 10, position[2] + direction[2] * distance), 0.1);
+            const lerpedPos = cameraRef.current.position.lerp(new Vector3(positionAvg[0] + direction[0] * distance, 10, positionAvg[2] + direction[2] * distance), 0.1);
 
             cameraRef.current.position.set(lerpedPos.x, lerpedPos.y, lerpedPos.z);
 
@@ -40,10 +43,12 @@ export const PlayerCamera = (props) => {
     });
 
     return (
-        <PerspectiveCamera
-            ref={cameraRef}
-            fov={90}
-            far={1000}
-            makeDefault={true}></PerspectiveCamera>
-    )
+        <>
+            {active &&
+                <PerspectiveCamera
+                    ref={cameraRef}
+                    fov={90}
+                    far={1000}
+                    makeDefault={true}></PerspectiveCamera>
+            }</>)
 }

@@ -16,34 +16,36 @@ export function Car(props) {
         materials
     } = useGLTF('/Car.glb')
     return (
-        <mesh ref={props.physicsRef} {...props}
-               dispose={null}>
-            <group position={props.offset}>
-            <mesh
-                receiveShadow
-                castShadow
-                geometry={nodes.Cylinder005_1.geometry}
-                material={materials.Material}/>
-            <mesh
-                receiveShadow
-                castShadow
-                geometry={nodes.Cylinder005_2.geometry}
-                material={materials['Material.001']}/>
-            <mesh
-                receiveShadow
-                castShadow
-                geometry={nodes.Cylinder005_3.geometry}
-                material={materials.Tire}/>
-            <mesh
-                receiveShadow
-                castShadow
-                geometry={nodes.Cylinder005_4.geometry}
-                material={materials.Car}/>
-            <mesh
-                receiveShadow
-                castShadow
-                geometry={nodes.Cylinder005_5.geometry}
-                material={materials.Windows}/>
+        <mesh
+            ref={props.physicsRef} {...props}
+            dispose={null}>
+            <group
+                position={props.offset}>
+                <mesh
+                    receiveShadow
+                    castShadow
+                    geometry={nodes.Cylinder005_1.geometry}
+                    material={materials.Material}/>
+                <mesh
+                    receiveShadow
+                    castShadow
+                    geometry={nodes.Cylinder005_2.geometry}
+                    material={materials['Material.001']}/>
+                <mesh
+                    receiveShadow
+                    castShadow
+                    geometry={nodes.Cylinder005_3.geometry}
+                    material={materials.Tire}/>
+                <mesh
+                    receiveShadow
+                    castShadow
+                    geometry={nodes.Cylinder005_4.geometry}
+                    material={materials.Car}/>
+                <mesh
+                    receiveShadow
+                    castShadow
+                    geometry={nodes.Cylinder005_5.geometry}
+                    material={materials.Windows}/>
             </group>
         </mesh>
     )

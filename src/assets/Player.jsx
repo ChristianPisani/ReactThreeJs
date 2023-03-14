@@ -28,30 +28,15 @@ import {
 import {
     PlayerCamera
 } from "./PlayerCamera.jsx";
+import {
+    CornParticles
+} from "./CornParticles.jsx";
+import {
+    CornDestroyed
+} from "./CornDestroyed.jsx";
 
-const Collider = (props) => {
-    const {
-        pos,
-        onCollide
-    } = props;
-
-    if(!pos) return;
-    
-    const [ref, api] = useBox(() => ({
-        position: [pos.x, pos.y + 5, pos.z],
-        args: [3, 10, 3],
-        type: "Static",
-        onCollide: (e) => onCollide(),
-        collisionResponse: 0,
-        collisionFilterGroup: 3,
-        collisionFilterMask: 1,
-        isTrigger: true
-    }));
-
-    return (
-        <></>
-    )
-}
+const slipperyMaterial = new CANNON.Material('slippery');
+slipperyMaterial.friction = 0;
 
 export const Player = (props) => {
     const [direction, setDirection] = useState([0, 0, 0])
@@ -61,12 +46,14 @@ export const Player = (props) => {
     const [rotatingRight, setRotatingRight] = useState(false);
     const [rotatingLeft, setRotatingLeft] = useState(false);
 
-    const movementSpeed = 200;
-    const rotationSpeed = 0.05;
+    const movementSpeed = 30000;
+    const rotationSpeed = 20000;
 
     const {
         cornField,
-        setCornField
+        setCornField,
+        tileSize,
+        setPlayerPos
     } = props;
 
     useEffect(() => {
@@ -121,32 +108,31 @@ export const Player = (props) => {
         return [x, y];
     }
 
-    const material = new CANNON.ContactMaterial({
-        friction: 0,
-        restitution: 0,
-        contactEquationStiffness: 1e8,
-        contactEquationRelaxation: 3,
-        frictionEquationStiffness: 1e8,
-        frictionEquationRegularizationTime: 3,
-    });
     const [carRef, carApi] = useSphere(() => ({
         linearDamping: 0.75,
         friction: 0,
-        angularDrag: 1000,
+        angularDamping: 0.8,
         restitution: 0,
-        material,
-        mass: 100,
+        mass: 350,
         position: [0, 10, 0],
         args: [6, 6, 6],
         type: "Dynamic",
         collisionFilterGroup: 1,
-        collisionFilterMask: 2
+        collisionFilterMask: 2,
+        fixedRotation: false,
+        material: slipperyMaterial
     }))
 
 
     const position = useRef([0, 0, 0]);
+    const velocity = useRef([0, 0, 0]);
     useEffect(() => {
-        carApi.position.subscribe(pos => position.current = pos);
+        carApi.position.subscribe(pos => {
+            position.current = pos;
+            setPlayerPos(pos);
+        });
+        carApi.velocity.subscribe(vel => velocity.current = vel);
+        carApi.rotation.subscribe(rot => setRotation(-rot[1]));
     }, [])
 
     useFrame(() => {
@@ -159,21 +145,22 @@ export const Player = (props) => {
         if (movingBackwards) {
             moveDir = 1;
         }
-        carApi.rotation.set(0, -rotation, 0);
 
         if (movingForward || movingBackwards) {
-            movementVector.multiplyScalar(movementSpeed * moveDir * 50);
-            const newPos = new Vector3(position[0] + movementVector.x, position[1] + movementVector.y, position[2] + movementVector.z);
+            movementVector.multiplyScalar(movementSpeed * moveDir);
 
-            carApi.applyLocalImpulse([0, 0, moveDir * movementSpeed], [0, 0, -1]);
+            carApi.applyLocalForce([0, 0, moveDir * movementSpeed], [0, 0, 0]);
         }
 
+        //carApi.rotation.set(0, -rotation, 0);
 
         if (rotatingLeft) {
-            setRotation(rotation - rotationSpeed);
+            carApi.applyTorque([0, rotationSpeed, 0]);
+            //setRotation(rotation - rotationSpeed);
         }
         if (rotatingRight) {
-            setRotation(rotation + rotationSpeed);
+            carApi.applyTorque([0, -rotationSpeed, 0]);
+            //setRotation(rotation + rotationSpeed);
         }
 
         /*const tiledPos = getTiledPos(position.current, 8);
@@ -202,34 +189,34 @@ export const Player = (props) => {
         setCornField(cornFieldCopy);*/
     });
 
-    const tiledPos = getTiledPos(position.current, 8);
+    /*const tiledPos = getTiledPos(position.current, tileSize);
     const getArrayPosX = (x) => {
         return Math.max(0, Math.min(cornField.length - 1, x))
     }
     const getArrayPosY = (y) => {
         return Math.max(0, Math.min(y, cornField[0].length - 1))
     }
-    
+
     const cornFieldGrid = [];
-    
-    for(let i = -4; i <= 4; i++) {
-        for(let j = -4; j <= 4; j++) {
+
+    for (let i = -4; i <= 4; i++) {
+        for (let j = -4; j <= 4; j++) {
             cornFieldGrid.push(cornField[getArrayPosX(tiledPos[0] + i)][getArrayPosY(tiledPos[2] + j)])
         }
-    }
-    
+    }*/
+
     return (
         <>
             <Car
                 scale={[2, 2, 2]}
                 offset={[0, -3, 0]}
-                physicsRef={carRef}
-                position={position}></Car>
-            <PlayerCamera position={position.current} direction={direction}></PlayerCamera>
-            <Box
-                position={getTiledPos(position.current, 10)}
-                scale={[10, 10, 10]}></Box>
-            {cornFieldGrid.map((plant, index) => (
+                physicsRef={carRef}></Car>
+            {
+                <PlayerCamera
+                    active={false}
+                    position={position.current}
+                    direction={direction}></PlayerCamera>}
+            {/*cornFieldGrid.map((plant, index) => (
                 <group
                     key={index}>
                     {!plant.destroyed &&
@@ -241,13 +228,26 @@ export const Player = (props) => {
                                 setCornField([...cornField]);
                             }}></Collider>
                     }
+                </group>
+            ))*/}
+            {/*cornField.flatMap(x => x).map((plant, index) => (
+                <group
+                    key={index + "plant"}>
                     {plant.destroyed &&
-                        <Box
-                            key={index + "_box"}
-                            position={[plant.position.x, plant.position.y, plant.position.z]} scale={[2,10,2]}></Box>
+                        <>
+                            <CornParticles
+                                key={index + "_box"}
+                                position={[plant.position.x, plant.position.y, plant.position.z]}
+                                velocity={velocity.current}
+                                scale={[2, 10, 2]}></CornParticles>
+                            <CornDestroyed
+                                position={[plant.position.x, plant.position.y, plant.position.z]}
+                                scale={[plant.scale.x, plant.scale.y, plant.scale.z]}
+                                rotation={[plant.rotation.x, plant.rotation.y, plant.rotation.z]}></CornDestroyed>
+                        </>
                     }
                 </group>
-            ))}
+            ))*/}
         </>
     )
 }
