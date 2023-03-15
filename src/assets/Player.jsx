@@ -39,8 +39,6 @@ const slipperyMaterial = new CANNON.Material('slippery');
 slipperyMaterial.friction = 0;
 
 export const Player = (props) => {
-    const [direction, setDirection] = useState([0, 0, 0])
-    const [rotation, setRotation] = useState(0);
     const [movingForward, setMovingForward] = useState(false);
     const [movingBackwards, setMovingBackwards] = useState(false);
     const [rotatingRight, setRotatingRight] = useState(false);
@@ -53,7 +51,7 @@ export const Player = (props) => {
         cornField,
         setCornField,
         tileSize,
-        setPlayerPos
+        setPlayerRef
     } = props;
 
     useEffect(() => {
@@ -126,19 +124,21 @@ export const Player = (props) => {
 
     const position = useRef([0, 0, 0]);
     const velocity = useRef([0, 0, 0]);
+    const rotation = useRef([0, 0, 0]);
     useEffect(() => {
         carApi.position.subscribe(pos => {
             position.current = pos;
-            setPlayerPos(pos);
         });
         carApi.velocity.subscribe(vel => velocity.current = vel);
-        carApi.rotation.subscribe(rot => setRotation(-rot[1]));
+        carApi.rotation.subscribe(rot => rotation.current = rot);
+        
+        setPlayerRef(position);
     }, [])
 
     useFrame(() => {
-        const forward = rotate2D(0, 1, rotation);
-        setDirection([forward[0], 0, forward[1]]);
-        const movementVector = new Vector3(forward[0], 0, forward[1]);
+        //const forward = rotate2D(0, 1, rotation);
+        //setDirection([forward[0], 0, forward[1]]);
+        //const movementVector = new Vector3(forward[0], 0, forward[1]);
 
         let moveDir = -1;
 
@@ -147,10 +147,12 @@ export const Player = (props) => {
         }
 
         if (movingForward || movingBackwards) {
-            movementVector.multiplyScalar(movementSpeed * moveDir);
+            //movementVector.multiplyScalar(movementSpeed * moveDir);
 
             carApi.applyLocalForce([0, 0, moveDir * movementSpeed], [0, 0, 0]);
         }
+        
+        
 
         //carApi.rotation.set(0, -rotation, 0);
 
@@ -213,9 +215,9 @@ export const Player = (props) => {
                 physicsRef={carRef}></Car>
             {
                 <PlayerCamera
-                    active={false}
-                    position={position.current}
-                    direction={direction}></PlayerCamera>}
+                    active={true}
+                    position={position}
+                    velocity={velocity}></PlayerCamera>}
             {/*cornFieldGrid.map((plant, index) => (
                 <group
                     key={index}>

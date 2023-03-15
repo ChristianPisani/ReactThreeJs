@@ -38,13 +38,13 @@ import {
 } from "./CornFieldChunk.jsx";
 
 
-const cornDistance = 7;
+const cornDistance = 8;
 
 const shadowCameraDist = 300;
 
 export const ThreeApp = () => {
     const [cornField, setCornField] = useState([]);
-    const [playerPos, setPlayerPos] = useState([0,0,0]);
+    const [playerPosRef, setPlayerPosRef] = useState();
 
     useEffect(() => {
         const createChunk = (i, j, chunkSize) => {
@@ -89,7 +89,8 @@ export const ThreeApp = () => {
                     y: j,
                     size: chunkSize,
                     spacing: cornDistance,
-                    chunk: createChunk(i, j, chunkSize)});
+                    chunk: createChunk(i, j, chunkSize)
+                });
             }
         }
 
@@ -127,23 +128,20 @@ export const ThreeApp = () => {
                 stepSize={1 / 60}
                 quatNormalizeFast={true}
                 iterations={1}>
-                <Debug>
-                    <Player
-                        tileSize={cornDistance}
-                        cornField={cornField[0]}
-                        setPlayerPos={setPlayerPos}
-                        setCornField={() => undefined}></Player>
+                <Player
+                    tileSize={cornDistance}
+                    setPlayerRef={setPlayerPosRef}></Player>
 
-                    <Ground></Ground>
-                    {
-                        cornField && cornField.length > 0 && cornField.map(cornChunk => (
-                            <CornFieldChunk
-                                playerPos={playerPos}
-                                cornField={cornChunk}></CornFieldChunk>
-                        ))
-                    }
-                    <OrbitControls></OrbitControls>
-                </Debug>
+                <Ground></Ground>
+                {
+                    cornField && cornField.length > 0 && cornField.map((cornChunk, index) => (
+                        <CornFieldChunk
+                            key={"chunk" + index}
+                            playerPosRef={playerPosRef}
+                            cornField={cornChunk}></CornFieldChunk>
+                    ))
+                }
+                <OrbitControls></OrbitControls>
             </Physics>
         </Canvas>
     );

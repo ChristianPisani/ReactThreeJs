@@ -21,6 +21,9 @@ import {
 import {
     CornDestroyed
 } from "./CornDestroyed.jsx";
+import {
+    useFrame
+} from "@react-three/fiber";
 
 const Collider = (props) => {
     const {
@@ -49,7 +52,7 @@ const Collider = (props) => {
 }
 
 export const CornFieldChunk = (props) => {
-    const {playerPos} = props;
+    const {playerPosRef} = props;
 
     const [cornField, setCornField] = useState([]);
     const [withinBounds, setWithinBounds] = useState(false);
@@ -66,12 +69,17 @@ export const CornFieldChunk = (props) => {
     }, [props.cornField])
 
     const tileSize = size * spacing;
+    const extend = 0;
 
-    useEffect(() => {
-        const extend = 1;
-        setWithinBounds(playerPos[0] > (x - extend) * tileSize && playerPos[0] < (x + extend) * tileSize + tileSize
-            && playerPos[2] > (y - extend) * tileSize && playerPos[2] < (y + extend) * tileSize + tileSize);
-    }, [playerPos]);
+    useFrame(() => {
+
+        if (!playerPosRef) return;
+
+        const pos = playerPosRef.current;
+
+        setWithinBounds(pos[0] > (x - extend) * tileSize && pos[0] < (x + extend) * tileSize + tileSize
+            && pos[2] > (y - extend) * tileSize && pos[2] < (y + extend) * tileSize + tileSize);
+    });
 
     return (
         <>
@@ -95,7 +103,19 @@ export const CornFieldChunk = (props) => {
                                     setCornField([...cornField]);
                                 }}></Collider>
                         }
-                       
+                        {plant.destroyed &&
+                            <>
+                                <CornParticles
+                                    key={index + "_box"}
+                                    position={[plant.position.x, plant.position.y, plant.position.z]}
+                                    velocity={[0,0,0]}
+                                    scale={[2, 10, 2]}></CornParticles>
+                                <CornDestroyed
+                                    position={[plant.position.x, plant.position.y, plant.position.z]}
+                                    scale={[plant.scale.x, plant.scale.y, plant.scale.z]}
+                                    rotation={[plant.rotation.x, plant.rotation.y, plant.rotation.z]}></CornDestroyed>
+                            </>
+                        }
                     </group>))
                 }
             </group>

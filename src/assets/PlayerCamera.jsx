@@ -17,29 +17,31 @@ export const PlayerCamera = (props) => {
     const cameraRef = useRef();
 
     const {
+        active,
         position,
-        direction,
-        active
+        velocity
     } = props;
 
 
     useFrame(() => {
-        if (!active || !position || !direction) return;
+        if (!active || !position || !velocity) return;
 
+        let direction = new Vector3(velocity.current[0], velocity.current[1], velocity.current[2]).normalize();
+        direction.applyAxisAngle(new Vector3(0,1,0), Math.PI);
+        direction = direction.toArray();
+  
         const shakeRemoval = 1;
-        const positionAvg = position.map(p => Math.round(p / shakeRemoval) * shakeRemoval);
+        const positionAvg = position.current.map(p => Math.round(p / shakeRemoval) * shakeRemoval);
 
         if (cameraRef.current) {
-            const distance = 10;
-            const lerpedPos = cameraRef.current.position.lerp(new Vector3(positionAvg[0] + direction[0] * distance, 10, positionAvg[2] + direction[2] * distance), 0.1);
-
+            const distance = 20;
+            const lerpedPos = cameraRef.current.position.lerp(new Vector3(positionAvg[0] + direction[0] * distance, 10, positionAvg[2] + direction[2] * distance), 0.25);
+            
             cameraRef.current.position.set(lerpedPos.x, lerpedPos.y, lerpedPos.z);
 
 
         }
-        //cameraRef.current.position.set([position[0] + direction[0] * 10, position[1] + direction[1] * 10 + 15, position[2] + direction[2] * 10]);
-
-        cameraRef?.current?.lookAt(position[0] - direction[0] * 10, position[1] - direction[1] * 10, position[2] - direction[2] * 10);
+        cameraRef?.current?.lookAt(position.current[0], position.current[1], position.current[2]);
     });
 
     return (
