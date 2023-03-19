@@ -36,7 +36,7 @@ export function Car(props) {
         materials
     } = useGLTF('/Car.glb')
 
-    const position = [-1.5, 3.5, 3];
+    const position = [-1.5, 26.5, 3];
     const width = 2.15;
     const height = 1;
     const front = 2.3;
@@ -50,7 +50,7 @@ export function Car(props) {
             mass: 150,
             position,
             collisionFilterGroup: 1,
-            collisionFilterMask: 2
+            collisionFilterMask: 80
         }),
         useRef(null),
     );

@@ -10,6 +10,7 @@ import React, {
     useState
 } from 'react'
 import {
+    Box,
     useGLTF
 } from '@react-three/drei'
 import {
@@ -21,6 +22,12 @@ import * as THREE
     from 'three';
 import * as CANNON
     from "cannon";
+import {
+    MeshSurfaceSampler
+} from "three/addons/math/MeshSurfaceSampler.js";
+import {
+    CornFieldArea
+} from "./CornFieldArea.jsx";
 
 export function Island(props) {
     const {
@@ -33,20 +40,20 @@ export function Island(props) {
 
     const slipperyMaterial = new CANNON.Material('slippery');
     slipperyMaterial.friction = 0;
-    
+
     const [collider] = useTrimesh(() => ({
         args: [vertices, indices],
         mass: 0,
         type: "Dynamic",
-        position: [0,-25,0],
         collisionFilterGroup: 2,
         material: slipperyMaterial
     }));
-    
+
     return (
         <group {...props}
                dispose={null}>
-            <mesh ref={collider}
+            <mesh
+                ref={collider}
                 geometry={nodes.Cube.geometry}
                 material={materials.Material}/>
         </group>

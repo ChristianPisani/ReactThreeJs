@@ -6,7 +6,7 @@ Command: npx gltfjsx@6.1.4 .\\Corn1.glb
 import React, { useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
 
-export function Model(props) {
+export function Corn1(props) {
   const { nodes, materials } = useGLTF('/Corn1.glb')
   return (
     <group {...props} dispose={null}>

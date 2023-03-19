@@ -45,6 +45,9 @@ import {
 import {
     Car
 } from "./Car.jsx";
+import {
+    CornFieldArea
+} from "./CornFieldArea.jsx";
 
 
 const cornDistance = 4;
@@ -129,23 +132,22 @@ export const ThreeApp = () => {
             />
 
             <Physics
+                broadphase={"SAP"}
                 frictionGravity={[0, 0, 0]}
                 gravity={[0, -9.8, 0]}
                 allowSleep={true}
                 solver={"Split"}
                 stepSize={1.0 / 60.0}>
-                <Debug
-                    color={"red"}
-                    scale={1}>
+                
                     <Ground></Ground>
-                    {
+                    {/*
                         cornField && cornField.length > 0 && cornField.map((cornChunk, index) => (
                             <CornFieldChunk
                                 key={"chunk" + index}
                                 playerPosRef={playerPosRef}
                                 cornField={cornChunk}></CornFieldChunk>
                         ))
-                    }
+                    */}
                     {/*<Player
                         tileSize={cornDistance}
                         setPlayerRef={setPlayerPosRef}></Player>*/}
@@ -154,8 +156,9 @@ export const ThreeApp = () => {
                         offset={[0, -0.5, -0.5]}
                         setPlayerRef={setPlayerPosRef}></Car>
                     <Water></Water>
+                    <CornFieldArea playerPosRef={playerPosRef}></CornFieldArea>
                     <OrbitControls></OrbitControls>
-                </Debug>
+              
             </Physics>
         </Canvas>
     );

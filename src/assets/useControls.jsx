@@ -64,7 +64,7 @@ export const useControls = (vehicleApi, chassisApi) => {
         }
 
         if (controls.r) {
-            chassisApi.position.set(-1.5, 0.5, 3);
+            chassisApi.position.set(-1.5, 26.5, 3);
             chassisApi.velocity.set(0, 0, 0);
             chassisApi.angularVelocity.set(0, 0, 0);
             chassisApi.rotation.set(0, 0, 0);
