@@ -35,17 +35,18 @@ import {
     CornDestroyed
 } from "./CornDestroyed.jsx";
 
-const slipperyMaterial = new CANNON.Material('slippery');
-slipperyMaterial.friction = 0;
+const slipperyMaterial = new CANNON.Material();
+slipperyMaterial.friction = 0.1;
 
 export const Player = (props) => {
     const [movingForward, setMovingForward] = useState(false);
     const [movingBackwards, setMovingBackwards] = useState(false);
     const [rotatingRight, setRotatingRight] = useState(false);
     const [rotatingLeft, setRotatingLeft] = useState(false);
+    const [colliding, setColliding] = useState(false);
 
-    const movementSpeed = 30000;
-    const rotationSpeed = 20000;
+    const movementSpeed = 300;
+    const rotationSpeed = 100;
 
     const {
         cornField,
@@ -107,18 +108,19 @@ export const Player = (props) => {
     }
 
     const [carRef, carApi] = useSphere(() => ({
-        linearDamping: 0.75,
-        friction: 0,
+        linearDamping: 0.5,
         angularDamping: 0.8,
         restitution: 0,
-        mass: 350,
+        mass: 10,
         position: [0, 10, 0],
-        args: [6, 6, 6],
+        args: [3, 3, 4],
         type: "Dynamic",
         collisionFilterGroup: 1,
         collisionFilterMask: 2,
         fixedRotation: false,
-        material: slipperyMaterial
+        material: slipperyMaterial,
+        onCollideBegin: () => setColliding(true),
+        onCollideEnd: () => setColliding(false)
     }))
 
 
@@ -146,10 +148,10 @@ export const Player = (props) => {
             moveDir = 1;
         }
 
-        if (movingForward || movingBackwards) {
+        if (colliding && (movingForward || movingBackwards)) {
             //movementVector.multiplyScalar(movementSpeed * moveDir);
 
-            carApi.applyLocalForce([0, 0, moveDir * movementSpeed], [0, 0, 0]);
+            carApi.applyLocalForce([0, 1, moveDir * movementSpeed], [0, 0, 0]);
         }
         
         
@@ -210,8 +212,8 @@ export const Player = (props) => {
     return (
         <>
             <Car
-                scale={[2, 2, 2]}
-                offset={[0, -3, 0]}
+                scale={[1, 1, 1]}
+                offset={[0, -1.5, 0]}
                 physicsRef={carRef}></Car>
             {
                 <PlayerCamera

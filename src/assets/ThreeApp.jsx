@@ -36,9 +36,18 @@ import {
 import {
     CornFieldChunk
 } from "./CornFieldChunk.jsx";
+import {
+    Island
+} from "./Island.jsx";
+import {
+    Water
+} from "./Water.jsx";
+import {
+    Car
+} from "./Car.jsx";
 
 
-const cornDistance = 8;
+const cornDistance = 4;
 
 const shadowCameraDist = 300;
 
@@ -53,7 +62,7 @@ export const ThreeApp = () => {
             for (let x = 0; x < chunkSize; x++) {
                 cornField.push([]);
                 for (let y = 0; y < chunkSize; y++) {
-                    const randomScale = Math.random() * 3 + 1;
+                    const randomScale = Math.random() * 1 + 1;
 
                     cornField[x].push({
                         position: {
@@ -80,7 +89,7 @@ export const ThreeApp = () => {
         }
 
         const cornFieldChunks = [];
-        const chunkSize = 5;
+        const chunkSize = 4;
 
         for (let i = -10; i < 10; i++) {
             for (let j = -10; j < 10; j++) {
@@ -120,28 +129,33 @@ export const ThreeApp = () => {
             />
 
             <Physics
-                tolerance={1}
-                maxSubSteps={1}
+                frictionGravity={[0, 0, 0]}
+                gravity={[0, -9.8, 0]}
                 allowSleep={true}
-                gravity={[0, -400, 0]}
                 solver={"Split"}
-                stepSize={1 / 60}
-                quatNormalizeFast={true}
-                iterations={1}>
-                <Player
-                    tileSize={cornDistance}
-                    setPlayerRef={setPlayerPosRef}></Player>
-
-                <Ground></Ground>
-                {
-                    cornField && cornField.length > 0 && cornField.map((cornChunk, index) => (
-                        <CornFieldChunk
-                            key={"chunk" + index}
-                            playerPosRef={playerPosRef}
-                            cornField={cornChunk}></CornFieldChunk>
-                    ))
-                }
-                <OrbitControls></OrbitControls>
+                stepSize={1.0 / 60.0}>
+                <Debug
+                    color={"red"}
+                    scale={1}>
+                    <Ground></Ground>
+                    {
+                        cornField && cornField.length > 0 && cornField.map((cornChunk, index) => (
+                            <CornFieldChunk
+                                key={"chunk" + index}
+                                playerPosRef={playerPosRef}
+                                cornField={cornChunk}></CornFieldChunk>
+                        ))
+                    }
+                    {/*<Player
+                        tileSize={cornDistance}
+                        setPlayerRef={setPlayerPosRef}></Player>*/}
+                    <Car
+                        scale={[1, 1, 1]}
+                        offset={[0, -0.5, -0.5]}
+                        setPlayerRef={setPlayerPosRef}></Car>
+                    <Water></Water>
+                    <OrbitControls></OrbitControls>
+                </Debug>
             </Physics>
         </Canvas>
     );
@@ -151,23 +165,27 @@ function Ground() {
     const slipperyMaterial = new CANNON.Material('slippery');
     slipperyMaterial.friction = 0;
 
-    const [groundRef] = usePlane(() => ({
+
+    /*const [groundRef] = usePlane(() => ({
         mass: 0,
         position: [0, 0, 0],
         args: [1000, 2, 1000],
         rotation: [-Math.PI / 2, 0, 0],
         collisionFilterGroup: 2,
         collisionFilterMask: [1, 80],
-        material: slipperyMaterial,
-        friction: 0
-    }))
+        material: slipperyMaterial
+    }))*/
 
     return (
-        <Plane
-            ref={groundRef}
-            receiveShadow
-            castShadow
-            scale={[1000, 1000, 1000]}
-            material={new THREE.MeshLambertMaterial({color: "#624f14"})}></Plane>
+        <>
+
+            <Island></Island>
+            {/*<Plane
+                ref={groundRef}
+                receiveShadow
+                castShadow
+                scale={[1000, 1000, 1000]}
+                material={new THREE.MeshLambertMaterial({color: "#624f14"})}></Plane>*/}
+        </>
     )
 }

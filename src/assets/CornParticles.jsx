@@ -20,10 +20,10 @@ const CornParticle = (props) => {
     const {position, height, velocity} = props;
 
     const [ref, api] = useBox(() => ({
-        mass: 2,
+        mass: 20,
         position: [position[0], position[1] + Math.random() * 10 + 3, position[2]],
         type: "Dynamic",
-        linearDamping: 0.25,
+        linearDamping: 0,
         collisionFilterMask: 2,
         collisionFilterGroup: 80,
         args: [1, height, 1],
@@ -33,11 +33,11 @@ const CornParticle = (props) => {
 
     useEffect(() => {
         const force = 500;
-        //api.applyLocalForce([Math.random() * force - force / 2, -Math.random() * force * 2, Math.random() * force - force / 2], [0, 0, 0]);
+        api.applyLocalForce([Math.random() * force - force / 2, -Math.random() * force * 2, Math.random() * force - force / 2], [0, 0, 0]);
         api.applyTorque([Math.random() * force - force / 2, -Math.random() * force, Math.random() * force - force / 2]);
         if(velocity) {
             const velForce = -200;
-            api.applyLocalForce([velocity[0] * velForce, velocity[1] * velForce, velocity[2] * velForce], [0, 0, 0])
+            //api.applyLocalForce([velocity[0] * velForce, velocity[1] * velForce, velocity[2] * velForce], [0, 0, 0])
         }
     }, []);
 

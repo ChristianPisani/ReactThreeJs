@@ -24,6 +24,9 @@ import {
 import {
     useFrame
 } from "@react-three/fiber";
+import {
+    CornPlant
+} from "./CornPlant.jsx";
 
 const Collider = (props) => {
     const {
@@ -69,7 +72,7 @@ export const CornFieldChunk = (props) => {
     }, [props.cornField])
 
     const tileSize = size * spacing;
-    const extend = 0;
+    const extend = 1;
 
     useFrame(() => {
 

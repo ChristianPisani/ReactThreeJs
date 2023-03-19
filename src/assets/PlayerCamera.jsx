@@ -30,12 +30,12 @@ export const PlayerCamera = (props) => {
         direction.applyAxisAngle(new Vector3(0,1,0), Math.PI);
         direction = direction.toArray();
   
-        const shakeRemoval = 1;
+        const shakeRemoval = 0.01;
         const positionAvg = position.current.map(p => Math.round(p / shakeRemoval) * shakeRemoval);
 
         if (cameraRef.current) {
-            const distance = 20;
-            const lerpedPos = cameraRef.current.position.lerp(new Vector3(positionAvg[0] + direction[0] * distance, 10, positionAvg[2] + direction[2] * distance), 0.25);
+            const distance = 10;
+            const lerpedPos = cameraRef.current.position.lerp(new Vector3(positionAvg[0] + direction[0] * distance, positionAvg[1] + 5, positionAvg[2] + direction[2] * distance), 0.25);
             
             cameraRef.current.position.set(lerpedPos.x, lerpedPos.y, lerpedPos.z);
 
