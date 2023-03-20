@@ -48,25 +48,22 @@ import {
 } from "./CornDestroyed.jsx";
 
 export function CornFieldArea(props) {
-    const {
-        nodes,
-        materials
-    } = useGLTF('/CornFieldArea.glb')
-
-    const [updateToggle, setUpdateToggle] = useState(false); 
+    const [updateToggle, setUpdateToggle] = useState(false);
     const cornField = useRef([])
     let tiledPlayerPos = useRef([])
 
-    const {playerPosRef} = props;
-
-    const mesh = nodes.Cube001;
+    const {
+        playerPosRef,
+        mesh
+    } = props;
 
     const tileSize = 5;
-    const tileOffset = 16; // Adjust negative values in grid
+    const tileOffset = 0; // Adjust negative values in grid
 
     const extend = 1;
 
     useEffect(() => {
+        if (!mesh || mesh.type != 'Mesh') return;
         // Create a sampler for a Mesh surface.
         const sampler = new MeshSurfaceSampler(mesh)
             .setWeightAttribute('color')
@@ -74,9 +71,9 @@ export function CornFieldArea(props) {
 
         const _position = new THREE.Vector3();
 
-        const newPositions = [];
+        const newPositions = {};
 
-        for (let i = 0; i < 5000; i++) {
+        for (let i = 0; i < 600; i++) {
             sampler.sample(_position);
 
             const tiledPos = getTiledPos(_position.toArray(), tileSize);
@@ -86,7 +83,7 @@ export function CornFieldArea(props) {
             const randomScale = 1;
 
             if (!newPositions[tiledPos[0]]) {
-                newPositions[tiledPos[0]] = [];
+                newPositions[tiledPos[0]] = {};
             }
 
             if (!newPositions[tiledPos[0]][tiledPos[2]]) {
@@ -114,32 +111,42 @@ export function CornFieldArea(props) {
         }
 
         cornField.current = newPositions;
-    }, [nodes])
+    }, [mesh])
 
     useFrame(() => {
         if (!playerPosRef) return;
 
         let anyDestroyed = false;
-        for (let x = 0; x < cornField.current.length; x++) {
-            for (let y = 0; y < cornField.current[x]?.length; y++) {
-                if (withinBounds(tiledPlayerPos.current, x, y)) {
-                    for (let i = 0; i < cornField.current[x][y]?.length; i++) {
-                        const plant = cornField.current[x][y][i];
-                        if(!plant?.position || plant.destroyed) continue;
-                        
+
+        const xKeys = Object.keys(cornField.current)
+            .map(x => Number(x))
+            .sort();
+
+        for (let x = 0; x < xKeys.length; x++) {
+
+            const yKeys = Object.keys(cornField.current[xKeys[x]])
+                .map(x => Number(x))
+                .sort();
+
+            for (let y = 0; y < yKeys.length; y++) {
+                if (withinBounds(tiledPlayerPos.current, xKeys[x], yKeys[y])) {
+                    for (let i = 0; i < cornField.current[xKeys[x]][yKeys[y]]?.length; i++) {
+                        const plant = cornField.current[xKeys[x]][yKeys[y]][i];
+                        if (!plant?.position || plant.destroyed) continue;
+
                         const playerPosVector = new Vector3(playerPosRef.current[0], 0, playerPosRef.current[2]);
                         const plantPositionVector = new Vector3(plant.position.x, 0, plant.position.z);
-                        
+
                         const distance = playerPosVector.distanceTo(plantPositionVector);
                         if (distance < 3) {
                             anyDestroyed = true;
-                            cornField.current[x][y][i].destroyed = true;
+                            cornField.current[xKeys[x]][yKeys[y]][i].destroyed = true;
                         }
                     }
                 }
             }
         }
-        if(anyDestroyed) {
+        if (anyDestroyed) {
             setUpdateToggle(!updateToggle);
         }
 
@@ -155,38 +162,57 @@ export function CornFieldArea(props) {
             && pos[2] >= (y - extend) && pos[2] <= (y + extend);
     }
 
+    const cornParticles = [];
+    const cornShrubs = [];
+
+    const xKeys = Object.keys(cornField.current)
+        .map(x => Number(x))
+        .sort();
+
+    for (let x = 0; x < xKeys.length; x++) {
+        const yKeys = Object.keys(cornField.current[xKeys[x]])
+            .map(x => Number(x))
+            .sort();
+
+        for (let y = 0; y < yKeys.length; y++) {
+            for (let i = 0; i < cornField.current[xKeys[x]][yKeys[y]]?.length; i++) {
+                const tile = cornField.current[xKeys[x]][yKeys[y]][i];
+
+                if (tile.destroyed) {
+                    cornParticles.push(
+                        <CornParticles
+                            key={`${x}-${y}-${i}-particle`}
+                            position={[tile.position.x, tile.position.y, tile.position.z]}
+                            velocity={[0, 0, 0]}
+                            scale={[2, 10, 2]}></CornParticles>);
+
+                    cornShrubs.push(
+                        <CornDestroyed
+                            key={`${x}-${y}-${i}-shrub`}
+                            position={[tile.position.x, tile.position.y, tile.position.z]}
+                            scale={[tile.scale.x, tile.scale.y, tile.scale.z]}
+                            rotation={[tile.rotation.x, tile.rotation.y, tile.rotation.z]}></CornDestroyed>
+                    );
+                }
+            }
+        }
+    }
+    
     return (
         <group {...props}
                dispose={null}>
             <CornPlantSimple
-                plants={cornField.current.flatMap(x => x.flatMap(y => y))}></CornPlantSimple>
+                plants={Object.keys(cornField.current).flatMap(x => Object.keys(cornField.current[x]).flatMap(y => cornField.current[x][y]))}></CornPlantSimple>
 
-            {cornField.current[0] && cornField.current.map((column, columnIndex) => {
-                return column.map((row, rowIndex) => {
-                    return row.map((tile, index) => (
+            {cornParticles}
+            {cornShrubs}
+
+            {cornField.current[0] && Object.keys(cornField.current).map((column, columnIndex) => {
+                return Object.keys(cornField.current[column]).map((row, rowIndex) => {
+                    return cornField.current[column][row].map((tile, index) => (
                         <>
-                            {tile.destroyed &&
-                                <>
-                                    <CornParticles
-                                        key={index + "_box"}
-                                        position={[tile.position.x, tile.position.y, tile.position.z]}
-                                        velocity={[0,0,0]}
-                                        scale={[2, 10, 2]}></CornParticles>
-                                    <CornDestroyed
-                                        position={[tile.position.x, tile.position.y, tile.position.z]}
-                                        scale={[tile.scale.x, tile.scale.y, tile.scale.z]}
-                                        rotation={[tile.rotation.x, tile.rotation.y, tile.rotation.z]}></CornDestroyed>
-                                </>
-                            }
-                            {withinBounds(tiledPlayerPos.current, columnIndex, rowIndex) && <></>
-                                /*<Collider
-                                    key={"collider" + index + tile.position.x + tile.position.z}
-                                    pos={tile.position}
-                                    onCollide={() => {
-                                        tile.destroyed = true;
-                                        setCornField([...cornField]);
-                                        console.log("Collide")
-                                    }}></Collider>*/}
+
+
                         </>
                     ))
                 })
@@ -220,5 +246,3 @@ const Collider = (props) => {
         <></>
     )
 }
-
-useGLTF.preload('/CornFieldArea.glb')

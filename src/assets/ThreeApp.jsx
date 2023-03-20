@@ -48,6 +48,9 @@ import {
 import {
     CornFieldArea
 } from "./CornFieldArea.jsx";
+import {
+    CornfieldChunks
+} from "./CornFieldChunks.jsx";
 
 
 const cornDistance = 4;
@@ -156,7 +159,7 @@ export const ThreeApp = () => {
                         offset={[0, -0.5, -0.5]}
                         setPlayerRef={setPlayerPosRef}></Car>
                     <Water></Water>
-                    <CornFieldArea playerPosRef={playerPosRef}></CornFieldArea>
+                    <CornfieldChunks playerPosRef={playerPosRef}></CornfieldChunks>
                     <OrbitControls></OrbitControls>
               
             </Physics>

@@ -103,7 +103,7 @@ export function Car(props) {
                 wheelRef={wheels[3]}
                 radius={wheelRadius}/>
             <PlayerCamera
-                active={true}
+                active={false}
                 position={carPosition}
                 velocity={velocity}></PlayerCamera>
         </group>

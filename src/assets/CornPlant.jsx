@@ -106,14 +106,14 @@ export function CornPlant(props) {
                         castShadow
                         receiveShadow
                         ref={leavesType1Ref}
-                        args={[null, null, type1Plants.length ?? 1]}
+                        args={[null, null, plants.length ?? 1]}
                         geometry={plant1Gltf.nodes.Circle001.geometry}
                         material={plant1Gltf.materials['Material.001']}/>
                     <instancedMesh
                         castShadow
                         receiveShadow
                         ref={stalkType1Ref}
-                        args={[null, null, type1Plants?.length ?? 1]}
+                        args={[null, null, plants?.length ?? 1]}
                         geometry={plant1Gltf.nodes.Circle001_1.geometry}
                         material={plant1Gltf.materials['Material.003']}/>
                 </group>
@@ -122,14 +122,14 @@ export function CornPlant(props) {
                         castShadow
                         receiveShadow
                         ref={leavesType2Ref}
-                        args={[null, null, type2Plants?.length ?? 1]}
+                        args={[null, null, plants?.length ?? 1]}
                         geometry={plant2Gltf.nodes.Circle002.geometry}
                         material={plant2Gltf.materials['Material.001']}/>
                     <instancedMesh
                         castShadow
                         receiveShadow
                         ref={stalkType2Ref}
-                        args={[null, null, type2Plants?.length ?? 1]}
+                        args={[null, null, plants?.length ?? 1]}
                         geometry={plant2Gltf.nodes.Circle002_1.geometry}
                         material={plant2Gltf.materials['Material.003']}/>
                 </group>
@@ -138,14 +138,14 @@ export function CornPlant(props) {
                         castShadow
                         receiveShadow
                         ref={leavesType3Ref}
-                        args={[null, null, type3Plants.length]}
+                        args={[null, null, plants.length]}
                         geometry={plant3Gltf.nodes.Circle003.geometry}
                         material={plant3Gltf.materials['Material.001']}/>
                     <instancedMesh
                         castShadow
                         receiveShadow
                         ref={stalkType3Ref}
-                        args={[null, null, type3Plants?.length ?? 1]}
+                        args={[null, null, plants?.length ?? 1]}
                         geometry={plant3Gltf.nodes.Circle003_1.geometry}
                         material={plant3Gltf.materials['Material.003']}/>
                 </group>
@@ -154,14 +154,14 @@ export function CornPlant(props) {
                         castShadow
                         receiveShadow
                         ref={leavesType4Ref}
-                        args={[null, null, type4Plants?.length ?? 1]}
+                        args={[null, null, plants?.length ?? 1]}
                         geometry={plant4Gltf.nodes.Circle004.geometry}
                         material={plant4Gltf.materials['Material.001']}/>
                     <instancedMesh
                         castShadow
                         receiveShadow
                         ref={stalkType4Ref}
-                        args={[null, null, type4Plants?.length ?? 1]}
+                        args={[null, null, plants?.length ?? 1]}
                         geometry={plant4Gltf.nodes.Circle004_1.geometry}
                         material={plant4Gltf.materials['Material.003']}/>
                 </group>
