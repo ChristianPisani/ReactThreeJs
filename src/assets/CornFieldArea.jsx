@@ -44,8 +44,8 @@ import {
     CornParticles
 } from "./CornParticles.jsx";
 import {
-    CornDestroyed
-} from "./CornDestroyed.jsx";
+    CornShrub
+} from "./CornShrub.jsx";
 
 export function CornFieldArea(props) {
     const [updateToggle, setUpdateToggle] = useState(false);
@@ -186,13 +186,13 @@ export function CornFieldArea(props) {
                             velocity={[0, 0, 0]}
                             scale={[2, 10, 2]}></CornParticles>);
 
-                    cornShrubs.push(
-                        <CornDestroyed
+                    /*cornShrubs.push(
+                        <CornShrub
                             key={`${x}-${y}-${i}-shrub`}
                             position={[tile.position.x, tile.position.y, tile.position.z]}
                             scale={[tile.scale.x, tile.scale.y, tile.scale.z]}
-                            rotation={[tile.rotation.x, tile.rotation.y, tile.rotation.z]}></CornDestroyed>
-                    );
+                            rotation={[tile.rotation.x, tile.rotation.y, tile.rotation.z]}></CornShrub>
+                    );*/
                 }
             }
         }
@@ -206,43 +206,6 @@ export function CornFieldArea(props) {
 
             {cornParticles}
             {cornShrubs}
-
-            {cornField.current[0] && Object.keys(cornField.current).map((column, columnIndex) => {
-                return Object.keys(cornField.current[column]).map((row, rowIndex) => {
-                    return cornField.current[column][row].map((tile, index) => (
-                        <>
-
-
-                        </>
-                    ))
-                })
-            })}
         </group>
-    )
-}
-
-const Collider = (props) => {
-    const {
-        pos,
-        onCollide
-    } = props;
-
-    if (!pos) return;
-
-    const [ref, api] = useSphere(() => ({
-        position: [pos.x, pos.y + 1, pos.z],
-        args: [1, 10, 1],
-        type: "Static",
-        onCollide: (e) => {
-            onCollide();
-        },
-        collisionResponse: 0,
-        collisionFilterGroup: 80,
-        collisionFilterMask: 1,
-        isTrigger: true
-    }));
-
-    return (
-        <></>
     )
 }

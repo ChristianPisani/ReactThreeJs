@@ -19,8 +19,8 @@ import {
     CornParticles
 } from "./CornParticles.jsx";
 import {
-    CornDestroyed
-} from "./CornDestroyed.jsx";
+    CornShrub
+} from "./CornShrub.jsx";
 import {
     useFrame
 } from "@react-three/fiber";
@@ -113,10 +113,10 @@ export const CornFieldChunk = (props) => {
                                     position={[plant.position.x, plant.position.y, plant.position.z]}
                                     velocity={[0,0,0]}
                                     scale={[2, 10, 2]}></CornParticles>
-                                <CornDestroyed
+                                <CornShrub
                                     position={[plant.position.x, plant.position.y, plant.position.z]}
                                     scale={[plant.scale.x, plant.scale.y, plant.scale.z]}
-                                    rotation={[plant.rotation.x, plant.rotation.y, plant.rotation.z]}></CornDestroyed>
+                                    rotation={[plant.rotation.x, plant.rotation.y, plant.rotation.z]}></CornShrub>
                             </>
                         }
                     </group>))

@@ -1,12 +1,13 @@
 ﻿import {
     useBox
 } from "@react-three/cannon";
-import {
+import React, {
     useEffect,
     useState
 } from "react";
 import {
-    Box
+    Box,
+    useGLTF
 } from "@react-three/drei";
 import {
     Color,
@@ -17,11 +18,11 @@ import {
 const cornMaterial = new MeshPhongMaterial({color: "#63821F"});
 
 const CornParticle = (props) => {
-    const {position, height, velocity} = props;
+    const {position, height, velocity, mesh, material} = props;
 
     const [ref, api] = useBox(() => ({
         mass: 20,
-        position: [position[0], position[1] + Math.random() * 10 + 3, position[2]],
+        position: [position[0], position[1] + Math.random() * 5 + 3, position[2]],
         type: "Dynamic",
         linearDamping: 0,
         collisionFilterMask: 2,
@@ -43,20 +44,22 @@ const CornParticle = (props) => {
 
     return (
         <>
-            <Box
+            <mesh geometry={mesh} material={material}
                 ref={ref}
                 scale={[0.5, height, 0.5]}
-                material={cornMaterial}></Box>
+                material={cornMaterial}></mesh>
         </>
     )
 }
 
 export const CornParticles = (props) => {
+    const { nodes, materials } = useGLTF('/CornShrub.glb')
+
     const {position} = props;
 
     const initialParticles = [];
     for (let i = 0; i < 3; i++) {
-        initialParticles.push({})
+        initialParticles.push({mesh: nodes[Object.keys(nodes)[i + 1]].geometry, material: materials['Material.001']})
     }
 
     const [particles, setParticles] = useState(initialParticles);
@@ -69,9 +72,12 @@ export const CornParticles = (props) => {
         <>
             {particles?.map((p, index) =>
                 <CornParticle
+                    mesh={p.mesh}
                     velocity={props.velocity}
                     key={"particle" + index + position.x + position.y + position.z}
                     position={position} height={3}></CornParticle>)}
         </>
     );
 }
+
+useGLTF.preload('/CornShrub.glb')

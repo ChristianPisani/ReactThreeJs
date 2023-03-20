@@ -6,8 +6,8 @@ Command: npx gltfjsx@6.1.4 .\\CornDestroyed.glb
 import React, { useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
 
-export function CornDestroyed(props) {
-  const { nodes, materials } = useGLTF('/CornDestroyed.glb')
+export function CornShrub(props) {
+  const { nodes, materials } = useGLTF('/CornShrub.glb')
   return (
     <group {...props} dispose={null}>
       <group position={[0, 0, 1.71]}>
@@ -18,4 +18,4 @@ export function CornDestroyed(props) {
   )
 }
 
-useGLTF.preload('/CornDestroyed.glb')
+useGLTF.preload('/CornShrub.glb')

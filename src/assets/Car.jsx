@@ -35,6 +35,8 @@ export function Car(props) {
         nodes,
         materials
     } = useGLTF('/Car.glb')
+    
+    const {isCameraFollow} = props;
 
     const position = [-1.5, 26.5, 3];
     const width = 2.15;
@@ -103,7 +105,7 @@ export function Car(props) {
                 wheelRef={wheels[3]}
                 radius={wheelRadius}/>
             <PlayerCamera
-                active={false}
+                active={isCameraFollow}
                 position={carPosition}
                 velocity={velocity}></PlayerCamera>
         </group>

@@ -58,90 +58,42 @@ const cornDistance = 4;
 const shadowCameraDist = 300;
 
 export const ThreeApp = () => {
-    const [cornField, setCornField] = useState([]);
     const [playerPosRef, setPlayerPosRef] = useState();
-
-    useEffect(() => {
-        const createChunk = (i, j, chunkSize) => {
-            const cornField = [];
-
-            for (let x = 0; x < chunkSize; x++) {
-                cornField.push([]);
-                for (let y = 0; y < chunkSize; y++) {
-                    const randomScale = Math.random() * 1 + 1;
-
-                    cornField[x].push({
-                        position: {
-                            x: (x + i * chunkSize) * cornDistance,
-                            y: 0,
-                            z: (y + j * chunkSize) * cornDistance
-                        },
-                        rotation: {
-                            x: Math.random() * 0.5,
-                            y: Math.random() * 360,
-                            z: Math.random() * 0.5
-                        },
-                        scale: {
-                            x: randomScale,
-                            y: randomScale,
-                            z: randomScale
-                        },
-                        variation: Math.round(Math.random() * 2) + 1
-                    });
-                }
-            }
-
-            return cornField;
-        }
-
-        const cornFieldChunks = [];
-        const chunkSize = 4;
-
-        for (let i = -10; i < 10; i++) {
-            for (let j = -10; j < 10; j++) {
-                cornFieldChunks.push({
-                    x: i,
-                    y: j,
-                    size: chunkSize,
-                    spacing: cornDistance,
-                    chunk: createChunk(i, j, chunkSize)
-                });
-            }
-        }
-
-        cornFieldChunks.push(cornField);
-
-        setCornField(cornFieldChunks);
-    }, [])
+    const [isCameraFollow, setIsCameraFollow] = useState(true);
 
     return (
-        <Canvas
-            className={"threeCanvas"}
-            shadows
-        >
-            <ambientLight
-                intensity={0.5}/>
-            <directionalLight
-                castShadow
-                position={[-50, 100, -100]}
-                color={new Color(1.5, 1.2, 1.2)}
-                shadow-camera-top={shadowCameraDist}
-                shadow-camera-bottom={-shadowCameraDist}
-                shadow-camera-left={shadowCameraDist}
-                shadow-camera-right={-shadowCameraDist}
-                shadow-camera-far={1000}
-                shadow-mapSize-height={1024}
-                shadow-mapSize-width={1024}
-            />
+        <>
+            <label htmlFor={"camera-checkbox"}>Toggle camera follow</label>
+            <input
+                type={"checkbox"} id={"camera-checkbox"} checked={isCameraFollow} onChange={(e) => setIsCameraFollow(e.target.checked)} />
 
-            <Physics
-                broadphase={"SAP"}
-                frictionGravity={[0, 0, 0]}
-                gravity={[0, -9.8, 0]}
-                allowSleep={true}
-                solver={"Split"}
-                stepSize={1.0 / 60.0}>
-                
+            <Canvas
+                className={"threeCanvas"}
+                shadows
+            >
+                <ambientLight
+                    intensity={0.5}/>
+                <directionalLight
+                    castShadow
+                    position={[-50, 100, -100]}
+                    color={new Color(1.5, 1.2, 1.2)}
+                    shadow-camera-top={shadowCameraDist}
+                    shadow-camera-bottom={-shadowCameraDist}
+                    shadow-camera-left={shadowCameraDist}
+                    shadow-camera-right={-shadowCameraDist}
+                    shadow-camera-far={1000}
+                    shadow-mapSize-height={1024}
+                    shadow-mapSize-width={1024}
+                />
+
+                <Physics
+                    broadphase={"SAP"}
+                    frictionGravity={[0, 0, 0]}
+                    gravity={[0, -9.8, 0]}
+                    allowSleep={true}
+                    solver={"Split"}
+                    stepSize={1.0 / 60.0}>
+
                     <Ground></Ground>
                     {/*
                         cornField && cornField.length > 0 && cornField.map((cornChunk, index) => (
@@ -154,16 +106,18 @@ export const ThreeApp = () => {
                     {/*<Player
                         tileSize={cornDistance}
                         setPlayerRef={setPlayerPosRef}></Player>*/}
-                    <Car
+                    <Car isCameraFollow={isCameraFollow}
                         scale={[1, 1, 1]}
                         offset={[0, -0.5, -0.5]}
                         setPlayerRef={setPlayerPosRef}></Car>
                     <Water></Water>
-                    <CornfieldChunks playerPosRef={playerPosRef}></CornfieldChunks>
+                    <CornfieldChunks
+                        playerPosRef={playerPosRef}></CornfieldChunks>
                     <OrbitControls></OrbitControls>
-              
-            </Physics>
-        </Canvas>
+
+                </Physics>
+            </Canvas>
+        </>
     );
 }
 

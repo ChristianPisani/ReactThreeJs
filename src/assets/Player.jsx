@@ -32,8 +32,8 @@ import {
     CornParticles
 } from "./CornParticles.jsx";
 import {
-    CornDestroyed
-} from "./CornDestroyed.jsx";
+    CornShrub
+} from "./CornShrub.jsx";
 
 const slipperyMaterial = new CANNON.Material();
 slipperyMaterial.friction = 0.1;
