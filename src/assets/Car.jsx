@@ -38,7 +38,7 @@ export function Car(props) {
     
     const {isCameraFollow} = props;
 
-    const position = [-1.5, 26.5, 3];
+    const position = [1200.5, 2.5, -300];
     const width = 2.15;
     const height = 1;
     const front = 2.3;
@@ -68,7 +68,7 @@ export function Car(props) {
         useRef(null),
     );
 
-    useControls(vehicleApi, chassisApi);
+    useControls(vehicleApi, chassisApi, position);
 
     const carPosition = useRef([0, 0, 0]);
     const velocity = useRef([0, 0, 0]);

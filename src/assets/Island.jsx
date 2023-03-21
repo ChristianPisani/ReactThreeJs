@@ -28,6 +28,9 @@ import {
 import {
     CornFieldArea
 } from "./CornFieldArea.jsx";
+import {
+    CornFieldGroundFirst
+} from "./CornFieldGroundFirst.jsx";
 
 export function Island(props) {
     const {
@@ -35,7 +38,7 @@ export function Island(props) {
         materials
     } = useGLTF('/Island.glb')
     
-    const vertices = nodes.Cube.geometry.attributes.position.array;
+    /*const vertices = nodes.Cube.geometry.attributes.position.array;
     const indices = nodes.Cube.geometry.index.array;
 
     const slipperyMaterial = new CANNON.Material('slippery');
@@ -47,15 +50,12 @@ export function Island(props) {
         type: "Dynamic",
         collisionFilterGroup: 2,
         material: slipperyMaterial
-    }));
+    }));*/
 
     return (
         <group {...props}
                dispose={null}>
-            <mesh
-                ref={collider}
-                geometry={nodes.Cube.geometry}
-                material={materials.Material}/>
+            <CornFieldGroundFirst></CornFieldGroundFirst>
         </group>
     )
 }

@@ -15,12 +15,12 @@ import {
 
 export function CornfieldChunks(props) {
     const {
-        nodes,
-        materials
+        nodes
     } = useGLTF('/CornFieldChunks.glb')
 
     const {playerPosRef} = props;
 
+    console.log(nodes)
     return (
         <group {...props}
                dispose={null}>

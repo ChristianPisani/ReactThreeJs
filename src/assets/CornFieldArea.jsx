@@ -73,7 +73,7 @@ export function CornFieldArea(props) {
 
         const newPositions = {};
 
-        for (let i = 0; i < 600; i++) {
+        for (let i = 0; i < 100; i++) {
             sampler.sample(_position);
 
             const tiledPos = getTiledPos(_position.toArray(), tileSize);

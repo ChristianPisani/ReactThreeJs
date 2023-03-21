@@ -2,7 +2,7 @@
 
 // from https://github.com/Domenicobrz/R3F-in-practice/blob/main/car-physics/src/useControls.jsx
 
-export const useControls = (vehicleApi, chassisApi) => {
+export const useControls = (vehicleApi, chassisApi, startPosition) => {
     let [controls, setControls] = useState({ });
     
     const moveSpeed = 500;
@@ -64,7 +64,7 @@ export const useControls = (vehicleApi, chassisApi) => {
         }
 
         if (controls.r) {
-            chassisApi.position.set(-1.5, 26.5, 3);
+            chassisApi.position.set(startPosition[0], startPosition[1], startPosition[2]);
             chassisApi.velocity.set(0, 0, 0);
             chassisApi.angularVelocity.set(0, 0, 0);
             chassisApi.rotation.set(0, 0, 0);
