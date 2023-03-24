@@ -5,9 +5,11 @@ Command: npx gltfjsx@6.1.4 .\\Car.glb
 
 import React, {
     useEffect,
-    useRef
+    useRef,
+    useState
 } from 'react'
 import {
+    Box,
     useGLTF
 } from '@react-three/drei'
 import {
@@ -24,11 +26,18 @@ import {
     useFrame
 } from "@react-three/fiber";
 import {
-    WheelDebug
-} from "./WheelDebug.jsx";
+    Wheel
+} from "./Wheel.jsx";
 import {
     PlayerCamera
 } from "./PlayerCamera.jsx";
+import {
+    Color,
+    Vector3
+} from "three";
+import {
+    TireParticles
+} from "./TireParticles.jsx";
 
 export function Car(props) {
     const {
@@ -36,20 +45,24 @@ export function Car(props) {
         materials
     } = useGLTF('/Car.glb')
     
+    const [shouldUpdate, setShouldUpdate] = useState(false);
+    
+    
     const {isCameraFollow} = props;
 
     const position = [1200.5, 2.5, -300];
     const width = 2.15;
     const height = 1;
     const front = 2.3;
-    const wheelRadius = 0.6;
+    const wheelRadius = 0.9;
 
     const chassisBodyArgs = [width, height, front * 2];
     const [chassisBody, chassisApi] = useBox(
         () => ({
-            allowSleep: false,
+            allowSleep: true,
+            sleepSpeedLimit: 2,
             args: chassisBodyArgs,
-            mass: 150,
+            mass: 2800,
             position,
             collisionFilterGroup: 1,
             collisionFilterMask: 80
@@ -63,19 +76,30 @@ export function Car(props) {
         () => ({
             chassisBody,
             wheelInfos,
-            wheels,
+            wheels
         }),
         useRef(null),
     );
 
-    useControls(vehicleApi, chassisApi, position);
 
     const carPosition = useRef([0, 0, 0]);
-    const velocity = useRef([0, 0, 0]);
+    const velocity = useRef(new Vector3(0, 0, 0));
+    const velocityLength = useRef(0);
     const rotation = useRef([0, 0, 0]);
+
+    useControls(vehicleApi, chassisApi, position, velocityLength);
+    
     useEffect(() => {
-        chassisApi.position.subscribe(pos => carPosition.current = pos);
-        chassisApi.velocity.subscribe(vel => velocity.current = vel);
+        chassisApi.position.subscribe(pos => {
+            carPosition.current = pos;
+            setShouldUpdate(!shouldUpdate)
+        });
+        chassisApi.velocity.subscribe(vel => {
+            velocity.current.x = vel[0];
+            velocity.current.y = vel[1];
+            velocity.current.z = vel[2];
+            velocityLength.current = velocity.current.length();
+        });
         chassisApi.rotation.subscribe(rot => rotation.current = rot);
         props.setPlayerRef(carPosition);
     }, [])
@@ -85,29 +109,32 @@ export function Car(props) {
             ref={vehicle} {...props}
             dispose={null}>
             <group ref={chassisBody}>
-            <mesh
+                <mesh
                 position={props.offset}
                 receiveShadow
                 castShadow
                 geometry={nodes.Cylinder005_4.geometry}
                 material={materials.Car}/>
             </group>
-            <WheelDebug
+            <Wheel
                 wheelRef={wheels[0]}
                 radius={wheelRadius}/>
-            <WheelDebug
+            <Wheel
                 wheelRef={wheels[1]}
                 radius={wheelRadius}/>
-            <WheelDebug
+            <Wheel
                 wheelRef={wheels[2]}
                 radius={wheelRadius}/>
-            <WheelDebug
+            <Wheel
                 wheelRef={wheels[3]}
                 radius={wheelRadius}/>
+            <TireParticles position={carPosition.current}></TireParticles>
+            
             <PlayerCamera
                 active={isCameraFollow}
                 position={carPosition}
-                velocity={velocity}></PlayerCamera>
+                velocity={velocity}
+                velocityLength={velocityLength}></PlayerCamera>
         </group>
     )
 }

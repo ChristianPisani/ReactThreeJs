@@ -14,6 +14,8 @@ import * as CANNON
 import {
     useTrimesh
 } from "@react-three/cannon";
+import node
+    from "three/addons/nodes/core/Node.js";
 
 export function CornFieldGroundFirst(props) {
     const {
@@ -21,26 +23,32 @@ export function CornFieldGroundFirst(props) {
         materials
     } = useGLTF('/CornFieldGroundFirst.glb')
 
-    const vertices = nodes.Plane007.geometry.attributes.position.array;
-    const indices = nodes.Plane007.geometry.index.array;
+    Object.keys(nodes).forEach(nodeKey => {
+        const node = nodes[nodeKey];
 
-    const slipperyMaterial = new CANNON.Material('slippery');
-    slipperyMaterial.friction = 0;
+        if (node?.geometry) {
+            const vertices = nodes[nodeKey].geometry.attributes.position.array;
+            const indices = nodes[nodeKey].geometry.index.array;
 
-    const [collider] = useTrimesh(() => ({
-        args: [vertices, indices],
-        mass: 0,
-        type: "Dynamic",
-        collisionFilterGroup: 2,
-        material: slipperyMaterial
-    }));
+            const [collider] = useTrimesh(() => ({
+                args: [vertices, indices],
+                mass: 0,
+                type: "Dynamic",
+                collisionFilterGroup: 2,
+            }));
+        }
+    });
 
     return (
         <group {...props}
                dispose={null}>
-            <mesh
-                geometry={nodes.Plane007.geometry}
-                material={materials.Grass}/>
+            {Object.keys(nodes).map(nodeKey => (
+                <mesh
+                    receiveShadow
+                    castShadow
+                    geometry={nodes[nodeKey].geometry}
+                    material={nodes[nodeKey].material}/>
+            ))}
         </group>
     )
 }

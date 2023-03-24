@@ -20,7 +20,6 @@ export function CornfieldChunks(props) {
 
     const {playerPosRef} = props;
 
-    console.log(nodes)
     return (
         <group {...props}
                dispose={null}>

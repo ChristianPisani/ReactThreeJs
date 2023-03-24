@@ -16,7 +16,7 @@ import {
     MeshPhongMaterial
 } from "three";
 
-const cornMaterial = new MeshPhongMaterial({color: "#63821F"});
+const smokematerial = new MeshPhongMaterial({color: "beige"});
 
 const TireParticle = (props) => {
     const {position, height, velocity, mesh, material} = props;
@@ -33,7 +33,7 @@ const TireParticle = (props) => {
 
 
     useEffect(() => {
-        const force = 500;
+        const force = 10;
         api.applyLocalForce([Math.random() * force - force / 2, -Math.random() * force * 2, Math.random() * force - force / 2], [0, 0, 0]);
         api.applyTorque([Math.random() * force - force / 2, -Math.random() * force, Math.random() * force - force / 2]);
         if(velocity) {
@@ -47,7 +47,7 @@ const TireParticle = (props) => {
             <Circle
                   ref={ref}
                   scale={[0.5, height, 0.5]}
-                  material={cornMaterial}></Circle>
+                  material={smokematerial}></Circle>
         </>
     )
 }
@@ -55,15 +55,24 @@ const TireParticle = (props) => {
 export const TireParticles = (props) => {
     const {position} = props;
 
-    const initialParticles = [];
-    for (let i = 0; i < 3; i++) {
-        initialParticles.push({})
+    const initialize = () =>
+    {
+        setParticles([]);
+        
+        const initialParticles = [];
+        for (let i = 0; i < 10; i++) {
+            initialParticles.push({})
+        }
+        
+        setParticles(initialParticles);
     }
 
-    const [particles, setParticles] = useState(initialParticles);
+    const [particles, setParticles] = useState([]);
 
+    
+    
     useEffect(() => {
-        setTimeout(() => setParticles([{},{},{}]), 1000);
+        setTimeout(() => initialize(), 2000);
     }, []);
 
     return (
@@ -71,7 +80,7 @@ export const TireParticles = (props) => {
             {position && particles?.map((p, index) =>
                 <TireParticle
                     velocity={props.velocity}
-                    key={`tireparticle${index}${position?.x}${position?.y}${position?.z}`}
+                    key={`tireparticle${index}${position[0]}${position[1]}${position[2]}`}
                     position={position} height={1}></TireParticle>)}
         </>
     );

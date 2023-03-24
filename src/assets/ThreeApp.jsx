@@ -16,7 +16,8 @@ import {
     Box
 } from "@react-three/drei";
 import {
-    Color
+    Color,
+    Object3D
 } from "three";
 import {
     CornPlant
@@ -55,11 +56,11 @@ import {
 
 const cornDistance = 4;
 
-const shadowCameraDist = 300;
-
 export const ThreeApp = () => {
     const [playerPosRef, setPlayerPosRef] = useState();
     const [isCameraFollow, setIsCameraFollow] = useState(true);
+
+    const lightTarget = useRef(new Object3D());
 
     return (
         <>
@@ -73,27 +74,17 @@ export const ThreeApp = () => {
             >
                 <ambientLight
                     intensity={0.5}/>
-                <directionalLight
-                    castShadow
-                    position={[-50, 100, -100]}
-                    color={new Color(1.5, 1.2, 1.2)}
-                    shadow-camera-top={shadowCameraDist}
-                    shadow-camera-bottom={-shadowCameraDist}
-                    shadow-camera-left={shadowCameraDist}
-                    shadow-camera-right={-shadowCameraDist}
-                    shadow-camera-far={1000}
-                    shadow-mapSize-height={1024}
-                    shadow-mapSize-width={1024}
-                />
 
                 <Physics
                     broadphase={"SAP"}
                     frictionGravity={[0, 0, 0]}
                     gravity={[0, -9.8, 0]}
+                    iterations={10}
+                    tolerance={19}
                     allowSleep={true}
                     solver={"Split"}
                     stepSize={1.0 / 60.0}>
-
+<Debug>
                     <Ground></Ground>
                     {/*
                         cornField && cornField.length > 0 && cornField.map((cornChunk, index) => (
@@ -114,7 +105,7 @@ export const ThreeApp = () => {
                     <CornfieldChunks
                         playerPosRef={playerPosRef}></CornfieldChunks>
                     <OrbitControls></OrbitControls>
-
+</Debug>
                 </Physics>
             </Canvas>
         </>
@@ -122,8 +113,6 @@ export const ThreeApp = () => {
 }
 
 function Ground() {
-    const slipperyMaterial = new CANNON.Material('slippery');
-    slipperyMaterial.friction = 0;
 
 
     /*const [groundRef] = usePlane(() => ({

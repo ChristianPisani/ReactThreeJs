@@ -1,11 +1,18 @@
-﻿import { useEffect, useState } from "react";
+﻿import {
+    useEffect,
+    useRef,
+    useState
+} from "react";
+import {
+    Vector3
+} from "three";
 
 // from https://github.com/Domenicobrz/R3F-in-practice/blob/main/car-physics/src/useControls.jsx
 
-export const useControls = (vehicleApi, chassisApi, startPosition) => {
+export const useControls = (vehicleApi, chassisApi, startPosition, velocityLength) => {
     let [controls, setControls] = useState({ });
     
-    const moveSpeed = 500;
+    const moveSpeed = 12000;
 
     useEffect(() => {
         const keyDownPressHandler = (e) => {
@@ -36,7 +43,7 @@ export const useControls = (vehicleApi, chassisApi, startPosition) => {
             vehicleApi.setBrake(20, 2);
             vehicleApi.setBrake(20, 3);
         }
-        else if (controls.w) {
+        else if (velocityLength.current < 20 && controls.w) {
             vehicleApi.applyEngineForce(moveSpeed, 0);
             vehicleApi.applyEngineForce(moveSpeed, 1);
         } else if (controls.s) {
@@ -48,15 +55,15 @@ export const useControls = (vehicleApi, chassisApi, startPosition) => {
         }
 
         if (controls.a) {
-            vehicleApi.setSteeringValue(0.35, 2);
-            vehicleApi.setSteeringValue(0.35, 3);
-            vehicleApi.setSteeringValue(-0.1, 0);
-            vehicleApi.setSteeringValue(-0.1, 1);
+            vehicleApi.setSteeringValue(0.45, 2);
+            vehicleApi.setSteeringValue(0.45, 3);
+            vehicleApi.setSteeringValue(-0, 0);
+            vehicleApi.setSteeringValue(-0, 1);
         } else if (controls.d) {
-            vehicleApi.setSteeringValue(-0.35, 2);
-            vehicleApi.setSteeringValue(-0.35, 3);
-            vehicleApi.setSteeringValue(0.1, 0);
-            vehicleApi.setSteeringValue(0.1, 1);
+            vehicleApi.setSteeringValue(-0.45, 2);
+            vehicleApi.setSteeringValue(-0.45, 3);
+            vehicleApi.setSteeringValue(0, 0);
+            vehicleApi.setSteeringValue(0, 1);
         } else {
             for(let i = 0; i < 4; i++) {
                 vehicleApi.setSteeringValue(0, i);

@@ -10,33 +10,39 @@ export const useWheels = (width, height, front, radius) => {
         radius,
         directionLocal: [0, -1, 0],
         axleLocal: [1, 0, 0],
-        suspensionStiffness: 60,
+        suspensionStiffness: 100,
         suspensionRestLength: 0,
-        frictionSlip: 5,
+        frictionSlip: 1,
         dampingRelaxation: 2.3,
         dampingCompression: 4.4,
-        maxSuspensionForce: 100000,
-        rollInfluence: 0.0,
+        maxSuspensionForce: 1000000000,
+        rollInfluence: 0,
         maxSuspensionTravel: 1,
         customSlidingRotationalSpeed: 0,
         useCustomSlidingRotationalSpeed: false,
-        collisionFilterGroup: 2
+        collisionFilterGroup: 2,
+        sleepSpeedLimit: 1,
+        allowSleep: false,
+        maxSpeed: 0.1,
+        maxForce: 0.1
     };
 
+    const wheelOffset = 0.65; 
+    
     const wheelInfos = [
         {
             ...wheelInfo,
-            chassisConnectionPointLocal: [-width * 0.65, -height * 0.4, front],
+            chassisConnectionPointLocal: [-width * 0.65, -height * wheelOffset, front],
             isFrontWheel: true,
         },
         {
             ...wheelInfo,
-            chassisConnectionPointLocal: [width * 0.65, -height * 0.4, front],
+            chassisConnectionPointLocal: [width * 0.65, -height * wheelOffset, front],
             isFrontWheel: true,
         },
         {
             ...wheelInfo,
-            chassisConnectionPointLocal: [-width * 0.65, -height * 0.4, -front],
+            chassisConnectionPointLocal: [-width * 0.65, -height * wheelOffset, -front],
             isFrontWheel: false,
         },
         {
@@ -55,6 +61,8 @@ export const useWheels = (width, height, front, radius) => {
                 args: [wheelInfo.radius, wheelInfo.radius, 0.5, 16],
                 rotation: [0, 0, -Math.PI / 2],
                 type: "Cylinder",
+                receiveShadow: true,
+                castShadow: true
             },
         ],
         type: "Kinematic",
