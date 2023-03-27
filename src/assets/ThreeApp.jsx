@@ -84,7 +84,7 @@ export const ThreeApp = () => {
                     allowSleep={true}
                     solver={"Split"}
                     stepSize={1.0 / 60.0}>
-<Debug>
+
                     <Ground></Ground>
                     {/*
                         cornField && cornField.length > 0 && cornField.map((cornChunk, index) => (
@@ -105,7 +105,7 @@ export const ThreeApp = () => {
                     <CornfieldChunks
                         playerPosRef={playerPosRef}></CornfieldChunks>
                     <OrbitControls></OrbitControls>
-</Debug>
+
                 </Physics>
             </Canvas>
         </>

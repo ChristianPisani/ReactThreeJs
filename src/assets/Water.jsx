@@ -10,7 +10,7 @@ export function Water(props) {
   const { nodes, materials } = useGLTF('/Water.glb')
   return (
     <group {...props} dispose={null}>
-      <mesh geometry={nodes.Plane006.geometry} material={materials.Water} position={[0.42, -20.2, 10.83]} />
+      <mesh geometry={nodes.Plane006.geometry} material={materials.Water} position={[0.42, -150.2, 10.83]} />
     </group>
   )
 }

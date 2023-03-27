@@ -67,14 +67,14 @@ export function CornPlantSimple(props) {
                         receiveShadow
                         ref={leavesType1Ref}
                         args={[null, null, plants?.length ?? 1]}
-                        geometry={plant1Gltf.nodes.Circle001.geometry}
+                        geometry={plant1Gltf.nodes.Circle009.geometry}
                         material={plant1Gltf.materials['Material.001']}/>
                     <instancedMesh
                         castShadow
                         receiveShadow
                         ref={stalkType1Ref}
                         args={[null, null, plants?.length ?? 1]}
-                        geometry={plant1Gltf.nodes.Circle001_1.geometry}
+                        geometry={plant1Gltf.nodes.Circle009_1.geometry}
                         material={plant1Gltf.materials['Material.003']}/>
                 </group>
             </group>

@@ -60,7 +60,7 @@ export function Car(props) {
     const [chassisBody, chassisApi] = useBox(
         () => ({
             allowSleep: true,
-            sleepSpeedLimit: 2,
+            sleepSpeedLimit: 1,
             args: chassisBodyArgs,
             mass: 2800,
             position,
@@ -115,6 +115,12 @@ export function Car(props) {
                 castShadow
                 geometry={nodes.Cylinder005_4.geometry}
                 material={materials.Car}/>
+                <mesh
+                    position={props.offset}
+                    receiveShadow
+                    castShadow
+                    geometry={nodes.Cube.geometry}
+                    material={materials.mETAL}/>
             </group>
             <Wheel
                 wheelRef={wheels[0]}
@@ -128,7 +134,6 @@ export function Car(props) {
             <Wheel
                 wheelRef={wheels[3]}
                 radius={wheelRadius}/>
-            <TireParticles position={carPosition.current}></TireParticles>
             
             <PlayerCamera
                 active={isCameraFollow}
